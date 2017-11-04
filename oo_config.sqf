@@ -1,6 +1,6 @@
 	/*
 	Author: code34 nicolas_boiteux@yahoo.fr
-	Copyright (C) 2016 Nicolas BOITEUX
+	Copyright (C) 2016-2018 Nicolas BOITEUX
 
 	CLASS OO_CONFIG - A3 config manager
 	
@@ -24,38 +24,38 @@
 		PRIVATE VARIABLE("scalar","version");
 
 		PUBLIC FUNCTION("array","constructor") {
+			DEBUG(#, "OO_CONFIG::constructor")
 			MEMBER("version", 0.1);
 		};
 
 		PUBLIC FUNCTION("","getVersion") FUNC_GETVAR("version");
 
 		PUBLIC FUNCTION("array", "makeCondition") {
-			_temp = configName _x;
+			DEBUG(#, "OO_CONFIG::makeCondition")
+			private _temp = configName _x;
 		};
 
 		PUBLIC FUNCTION("array", "parseConfig") {
-			private ["_array", "_condition", "_path", "_count", "_type"];
-			_array = [];
-
-			_path = _this select 0;
-			_condition = _this select 1;
-
-			_path = call compile (MEMBER("buildPath", _path));
-			_type = MEMBER("checkType", _path);
-			_count = count (_path);
+			DEBUG(#, "OO_CONFIG::parseConfig")
+			private _array = [];
+			private _path = _this select 0;
+			private _condition = _this select 1;
 			
+			_path = call compile (MEMBER("buildPath", _path));	
+			private _type = MEMBER("checkType", _path);
+			private _count = count (_path);		
 			for "_i" from 0 to (_count-1) do {
-				if(_type == "text") then {
-					_array = _array + [getText (_path select _i)];
+				if(_type isEqualTo "text") then {
+					_array pushBack getText (_path select _i);
 				};
-				if(_type == "class") then {
-					_array = _array + [configName (_path select _i)];
+				if(_type isEqualTo "class") then {
+					_array pushBack configName (_path select _i);
 				};
-				if(_type == "number") then {
-					_array = _array + [getNumber (_path select _i)];
+				if(_type isEqualTo "number") then {
+					_array pushBack getNumber (_path select _i);
 				};
-				if(_type == "array") then {
-					_array = _array + [getArray (_path select _i)];
+				if(_type isEqualTo "array") then {
+					_array pushBack getArray (_path select _i);
 				};
 				sleep 0.001;
 			};
@@ -63,34 +63,24 @@
 		};
 
 		PUBLIC FUNCTION("config", "checkType") {
-			private ["_type"];
-			
-			_type = "";
-			if(isText _this) then {
-				_type = "text";
-			};
-			if(isClass _this) then {
-				_type = "class";
-			};
-			if(isNumber _this) then {
-				_type = "number";
-			};
-			if(isArray _this) then {
-				_type = "array";
-			};
+			DEBUG(#, "OO_CONFIG::checkType")	
+			private _type = "";
+			if(isText _this) then { _type = "text"; };
+			if(isClass _this) then { _type = "class"; };
+			if(isNumber _this) then { _type = "number"; };
+			if(isArray _this) then { _type = "array"; };
 			_type;
 		};
 
 		PUBLIC FUNCTION("array", "buildPath") {
-			private ["_string"];
-			_string = "configFile";
-			{
-				_string = _string +' >> "'+ _x + '" ';
-			} foreach _this;
+			DEBUG(#, "OO_CONFIG::buildPath")	
+			private _string = "configFile";
+			{ _string = _string +' >> "'+ _x + '" '; } foreach _this;
 			_string;
 		};
 
 		PUBLIC FUNCTION("","deconstructor") { 
+			DEBUG(#, "OO_CONFIG::deconstructor")	
 			DELETE_VARIABLE("version");
 		};
 	ENDCLASS;
